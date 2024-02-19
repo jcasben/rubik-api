@@ -4,7 +4,7 @@ extern crate dotenv;
 use dotenv::dotenv;
 
 use mongodb::{
-    bson::extjson::de::Error,
+    bson::{extjson::de::Error, oid::ObjectId, doc},
     results::InsertOneResult,
     sync::{Client, Collection},
 };
@@ -38,9 +38,19 @@ impl MongoRepo {
         let cube = self
             .col
             .insert_one(cube, None)
-            .ok()
             .expect("Failed to insert document.");
 
         Ok(cube)
+    }
+
+    pub fn get_cube(&self, id: &String) -> Result<Cube, Error> {
+        let obj_id = ObjectId::parse_str(id).unwrap();
+        let filter = doc! {"_id": obj_id};
+        let user_detail = self
+            .col
+            .find_one(filter, None)
+            .expect("Error getting cube's detail");
+        
+        Ok(user_detail.unwrap())
     }
 }
