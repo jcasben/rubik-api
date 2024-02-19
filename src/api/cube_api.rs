@@ -18,3 +18,17 @@ pub fn insert_cube(
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+#[get("/cube/<path>")]
+pub fn get_cube(db: &State<MongoRepo>, path: String) -> Result<Json<Cube>, Status> {
+    let id = path;
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+    
+    let cube_detail = db.get_cube(&id);
+    match cube_detail {
+        Ok(cube) => Ok(Json(cube)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
