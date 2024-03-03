@@ -5,9 +5,11 @@ use dotenv::dotenv;
 
 use mongodb::{
     bson::{extjson::de::Error, oid::ObjectId, doc},
-    results::InsertOneResult,
-    sync::{Client, Collection},
+    bson, 
+    results::{InsertOneResult, UpdateResult, DeleteResult},
+    sync::{Client, Collection}
 };
+
 use crate::models::cube_model::Cube;
 
 pub struct MongoRepo {
@@ -52,5 +54,47 @@ impl MongoRepo {
             .expect("Error getting cube's detail");
         
         Ok(user_detail.unwrap())
+    }
+    
+    pub fn edit_cube(&self, id: &String, new_cube: Cube) -> Result<UpdateResult, Error> {
+        let obj_id = ObjectId::parse_str(id).unwrap();
+        let filer = doc! {"_id": obj_id};
+        let bson_wr = bson::to_bson(&new_cube.wr).unwrap();
+        let new_doc = doc! {
+            "$set":
+                {
+                    "id": new_cube.id,
+                    "name": new_cube.name,
+                    "type_": new_cube.type_,
+                    "wr": bson_wr,
+                },
+        };
+        let updated_doc = self
+            .col
+            .update_one(filer, new_doc, None)
+            .expect("Error updating the cube");
+
+        Ok(updated_doc)
+    }
+    
+    pub fn delete_cube(&self, id: &String) -> Result<DeleteResult, Error> {
+        let obj_id = ObjectId::parse_str(id).unwrap();
+        let filter = doc! {"_id": obj_id};
+        let cube_detail = self
+            .col
+            .delete_one(filter, None)
+            .expect("Error deleting the cube");
+        
+        Ok(cube_detail)
+    }
+    
+    pub fn get_all_cubes(&self) -> Result<Vec<Cube>, Error> {
+        let cursors = self
+            .col
+            .find(None, None)
+            .expect("Error getting list of cubes!");
+        let cubes = cursors.map(|doc| doc.unwrap()).collect();
+        
+        Ok(cubes)
     }
 }
