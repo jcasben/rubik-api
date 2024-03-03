@@ -1,3 +1,4 @@
+use mongodb::bson::oid::ObjectId;
 use crate::{models::cube_model::Cube, repository::mongodb_repo::MongoRepo};
 use mongodb::results::InsertOneResult;
 use rocket::{http::Status, serde::json::Json, State};
@@ -25,10 +26,71 @@ pub fn get_cube(db: &State<MongoRepo>, path: String) -> Result<Json<Cube>, Statu
     if id.is_empty() {
         return Err(Status::BadRequest);
     };
-    
+
     let cube_detail = db.get_cube(&id);
     match cube_detail {
         Ok(cube) => Ok(Json(cube)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+#[put("/cube/<path>", data = "<new_cube>")]
+pub fn update_cube(
+    db: &State<MongoRepo>, path: String, new_cube: Json<Cube>, 
+) -> Result<Json<Cube>, Status> {
+    let id = path;
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+
+    let data = Cube {
+        id: Some(ObjectId::parse_str(&id).unwrap()),
+        name: new_cube.name.to_owned(),
+        type_: new_cube.type_.to_owned(),
+        wr: new_cube.wr.clone(),
+    };
+    
+    let update_result = db.edit_cube(&id, data);
+    match update_result { 
+        Ok(update) => {
+            if update.matched_count == 1 {
+                let updated_cube_info = db.get_cube(&id);
+                match updated_cube_info {
+                    Ok(cube) => Ok(Json(cube)),
+                    Err(_) => Err(Status::InternalServerError),
+                }
+            } else {
+                Err(Status::NotFound)
+            }
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+#[delete("/cube/<path>")]
+pub fn delete_cube(db: &State<MongoRepo>, path: String) -> Result<Json<&str>, Status> {
+    let id = path;
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+    let result = db.delete_cube(&id);
+    match result {
+        Ok(res) => {
+            if res.deleted_count == 1 {
+                return Ok(Json("Cube successfully deleted!"));
+            } else {
+                return Err(Status::InternalServerError);
+            }
+        },
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+#[get("/cubes")]
+pub fn get_all_cubes(db: &State<MongoRepo>) -> Result<Json<Vec<Cube>>, Status> {
+    let cubes = db.get_all_cubes();
+    match cubes {
+        Ok(cubes) => Ok(Json(cubes)),
         Err(_) => Err(Status::InternalServerError),
     }
 }
