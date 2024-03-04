@@ -12,6 +12,7 @@ use repository::mongodb_repo::MongoRepo;
 fn rocket() -> _ {
     let db = MongoRepo::init();
     rocket::build()
+        .configure(rocket::Config::figment().merge(("port", 10000)))
         .manage(db)
         .mount("/", routes![insert_cube])
         .mount("/", routes![get_cube])
