@@ -1,6 +1,5 @@
-use mongodb::bson::oid::ObjectId;
 use crate::{models::cube_model::Cube, repository::mongodb_repo::MongoRepo};
-use mongodb::results::InsertOneResult;
+use mongodb::{bson::oid::ObjectId, results::InsertOneResult};
 use rocket::{http::Status, serde::json::Json, State};
 
 #[post("/add_cube", data = "<new_cube>")]
@@ -20,9 +19,8 @@ pub fn insert_cube(
     }
 }
 
-#[get("/cube/<path>")]
-pub fn get_cube(db: &State<MongoRepo>, path: String) -> Result<Json<Cube>, Status> {
-    let id = path;
+#[get("/cube?<id>")]
+pub fn get_cube(db: &State<MongoRepo>, id: String) -> Result<Json<Cube>, Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
     };
@@ -34,11 +32,10 @@ pub fn get_cube(db: &State<MongoRepo>, path: String) -> Result<Json<Cube>, Statu
     }
 }
 
-#[put("/cube/<path>", data = "<new_cube>")]
+#[put("/cube?<id>", data = "<new_cube>")]
 pub fn update_cube(
-    db: &State<MongoRepo>, path: String, new_cube: Json<Cube>, 
+    db: &State<MongoRepo>, id: String, new_cube: Json<Cube>, 
 ) -> Result<Json<Cube>, Status> {
-    let id = path;
     if id.is_empty() {
         return Err(Status::BadRequest);
     };
@@ -67,9 +64,8 @@ pub fn update_cube(
     }
 }
 
-#[delete("/cube/<path>")]
-pub fn delete_cube(db: &State<MongoRepo>, path: String) -> Result<Json<&str>, Status> {
-    let id = path;
+#[delete("/delete_cube?<id>")]
+pub fn delete_cube(db: &State<MongoRepo>, id: String) -> Result<Json<&str>, Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
     };
@@ -77,9 +73,9 @@ pub fn delete_cube(db: &State<MongoRepo>, path: String) -> Result<Json<&str>, St
     match result {
         Ok(res) => {
             if res.deleted_count == 1 {
-                return Ok(Json("Cube successfully deleted!"));
+                Ok(Json("Cube successfully deleted!"))
             } else {
-                return Err(Status::InternalServerError);
+                Err(Status::InternalServerError)
             }
         },
         Err(_) => Err(Status::InternalServerError),
