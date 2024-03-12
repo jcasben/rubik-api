@@ -1,4 +1,4 @@
-# Rubik API 
+# 🧩 Rubik API 
 
 Rubik API is a simple REST API that allows you to obtain information about all kinds of Rubik's cubes, such as
 the 2x2, 3x3, 4x4, 5x5, 6x6, 7x7, Pyraminx, Megaminx, Skewb, Square-1, and more.
@@ -18,7 +18,7 @@ The information that can be pulled from this API includes:
 while, it will enter on sleep mode.
 This could cause the first request to take a little longer than usual, so please be patient :).
 
-## Technologies 📦
+## 📦 Technologies 
 
 - Rust
 - Rocket
@@ -26,7 +26,7 @@ This could cause the first request to take a little longer than usual, so please
 - Postman
 - [Render](https://render.com/) hosting service
 
-## Functionalities ⚙️
+## ⚙️ Functionalities 
 
 The common users of this API will be only able to perform GET requests to obtain information about the cubes, while
 the admin users will be able to perform all CRUD operations.
