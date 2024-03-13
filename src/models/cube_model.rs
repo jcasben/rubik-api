@@ -9,9 +9,9 @@ pub struct Cube {
     pub id: Option<ObjectId>,
     pub name: String,
     pub type_: CubeType,
-    pub pieces: u8,
-    pub faces: u8,
-    pub stickers: u8,
-    pub year_created: u8,
+    pub pieces: u32,
+    pub faces: u32,
+    pub stickers: u32,
+    pub year_created: u32,
     pub wr: WorldRecord,
 }
