@@ -23,7 +23,7 @@ pub fn insert_cube(
     }
 }
 
-#[get("/cube?<id>")]
+#[get("/cube_by_id?<id>")]
 pub fn get_cube(db: &State<MongoRepo>, id: String) -> Result<Json<Cube>, Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
