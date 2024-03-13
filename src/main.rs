@@ -5,7 +5,7 @@ mod repository;
 #[macro_use] 
 extern crate rocket;
 
-use api::cube_api::{insert_cube, get_cube, delete_cube, update_cube, get_all_cubes};
+use api::cube_api::*;
 use repository::mongodb_repo::MongoRepo;
 
 #[launch]
