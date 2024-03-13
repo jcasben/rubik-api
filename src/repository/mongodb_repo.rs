@@ -19,10 +19,8 @@ pub struct MongoRepo {
 impl MongoRepo {
     pub fn init() -> Self {
         dotenv().ok();
-        let uri = match env::var("MONGOURI") {
-            Ok(val) => val,
-            Err(_) => format!("MONGOURI not found in .env"),
-        };
+        let uri = env::var("MONGOURI")
+            .unwrap_or_else(|_| "MONGOURI not found in .env".to_string());
         let client = Client::with_uri_str(uri).unwrap();
         let db = client.database("rubikapi");
         let col: Collection<Cube> = db.collection("cubes");
@@ -34,6 +32,10 @@ impl MongoRepo {
             id: None,
             name: new_cube.name,
             type_: new_cube.type_,
+            pieces: new_cube.pieces,
+            faces: new_cube.faces,
+            stickers: new_cube.stickers,
+            year_created: new_cube.year_created,
             wr: new_cube.wr,
         };
 
@@ -59,13 +61,22 @@ impl MongoRepo {
     pub fn edit_cube(&self, id: &String, new_cube: Cube) -> Result<UpdateResult, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filer = doc! {"_id": obj_id};
+        let bson_type = bson::to_bson(&new_cube.type_).unwrap();
         let bson_wr = bson::to_bson(&new_cube.wr).unwrap();
+        let bson_pieces = bson::to_bson(&new_cube.pieces).unwrap();
+        let bson_faces  = bson::to_bson(&new_cube.faces).unwrap();
+        let bson_stickers  = bson::to_bson(&new_cube.stickers).unwrap();
+        let bson_year  = bson::to_bson(&new_cube.year_created).unwrap();
         let new_doc = doc! {
             "$set":
                 {
                     "id": new_cube.id,
                     "name": new_cube.name,
-                    "type_": new_cube.type_,
+                    "type_": bson_type,
+                    "pieces": bson_pieces,
+                    "faces": bson_faces,
+                    "stickers": bson_stickers,
+                    "year_created": bson_year,
                     "wr": bson_wr,
                 },
         };
@@ -94,7 +105,7 @@ impl MongoRepo {
             .find(None, None)
             .expect("Error getting list of cubes!");
         let cubes = cursors.map(|doc| doc.unwrap()).collect();
-        
+
         Ok(cubes)
     }
 }
