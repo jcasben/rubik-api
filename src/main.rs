@@ -19,4 +19,6 @@ fn rocket() -> _ {
         .mount("/", routes![update_cube])
         .mount("/", routes![delete_cube])
         .mount("/", routes![get_all_cubes])
+        .mount("/", routes![get_cube_by_name])
+        .mount("/", routes![get_cube_by_type])
 }
