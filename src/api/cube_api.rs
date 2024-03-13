@@ -9,7 +9,11 @@ pub fn insert_cube(
     let data = Cube {
         id: None,
         name: new_cube.name.to_owned(),
-        type_: new_cube.type_.to_owned(),
+        type_: new_cube.type_.clone(),
+        pieces: new_cube.pieces,
+        faces: new_cube.faces,
+        stickers: new_cube.stickers,
+        year_created: new_cube.year_created,
         wr: new_cube.wr.clone(),
     };
     let cube_detail = db.insert_cube(data);
@@ -32,7 +36,7 @@ pub fn get_cube(db: &State<MongoRepo>, id: String) -> Result<Json<Cube>, Status>
     }
 }
 
-#[put("/cube?<id>", data = "<new_cube>")]
+#[put("/update_cube?<id>", data = "<new_cube>")]
 pub fn update_cube(
     db: &State<MongoRepo>, id: String, new_cube: Json<Cube>, 
 ) -> Result<Json<Cube>, Status> {
@@ -43,7 +47,11 @@ pub fn update_cube(
     let data = Cube {
         id: Some(ObjectId::parse_str(&id).unwrap()),
         name: new_cube.name.to_owned(),
-        type_: new_cube.type_.to_owned(),
+        type_: new_cube.type_.clone(),
+        pieces: new_cube.pieces,
+        faces: new_cube.faces,
+        stickers: new_cube.stickers,
+        year_created: new_cube.year_created,
         wr: new_cube.wr.clone(),
     };
     
