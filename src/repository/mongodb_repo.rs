@@ -108,4 +108,26 @@ impl MongoRepo {
 
         Ok(cubes)
     }
+
+    pub fn get_cube_by_name(&self, name: &String) -> Result<Vec<Cube>, Error> {
+        let filter = doc! {"name": name};
+        let cursors = self
+            .col
+            .find(filter, None)
+            .expect("Error getting cube by name!");
+        let cubes = cursors.map(|doc| doc.unwrap()).collect();
+
+        Ok(cubes)
+    }
+
+    pub fn get_cube_by_type(&self, type_: &String) -> Result<Vec<Cube>, Error> {
+        let filter = doc! {"type_": type_};
+        let cursors = self
+            .col
+            .find(filter, None)
+            .expect("Error getting cube by type!");
+        let cubes = cursors.map(|doc| doc.unwrap()).collect();
+
+        Ok(cubes)
+    }
 }
