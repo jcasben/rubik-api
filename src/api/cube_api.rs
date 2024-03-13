@@ -98,3 +98,27 @@ pub fn get_all_cubes(db: &State<MongoRepo>) -> Result<Json<Vec<Cube>>, Status> {
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+#[get("/cube_by_name?<name>")]
+pub fn get_cube_by_name(db: &State<MongoRepo>, name: String) -> Result<Json<Vec<Cube>>, Status> {
+    if name.is_empty() {
+        return Err(Status::BadRequest);
+    };
+    let cubes_detail = db.get_cube_by_name(&name);
+    match cubes_detail {
+        Ok(cubes) => Ok(Json(cubes)),
+        Err(_) => Err(Status::InternalServerError)
+    }
+}
+
+#[get("/cube_by_type?<type_>")]
+pub fn get_cube_by_type(db: &State<MongoRepo>, type_: String) -> Result<Json<Vec<Cube>>, Status> {
+    if type_.is_empty() {
+        return Err(Status::BadRequest);
+    };
+    let cubes_detail = db.get_cube_by_type(&type_);
+    match cubes_detail {
+        Ok(cubes) => Ok(Json(cubes)),
+        Err(_) => Err(Status::InternalServerError)
+    }
+}
