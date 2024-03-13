@@ -20,16 +20,3 @@ fn rocket() -> _ {
         .mount("/", routes![delete_cube])
         .mount("/", routes![get_all_cubes])
 }
-
-/*#[get("/")]
-fn index() -> Result<Json<String>, Status> {
-    Ok(Json(String::from("Hello, world!")))
-}*/
-
-/*#[get("/3x3")]
-fn get_3x3() -> Json<Cube> {
-    Json(Cube {
-        name: String::from("3x3"),
-        wr: 3.134,
-    })
-}*/
