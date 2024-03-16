@@ -38,7 +38,9 @@ pub fn get_cube(db: &State<MongoRepo>, id: String) -> Result<Json<Cube>, Status>
 
 #[put("/update_cube?<id>", data = "<new_cube>")]
 pub fn update_cube(
-    db: &State<MongoRepo>, id: String, new_cube: Json<Cube>, 
+    db: &State<MongoRepo>, 
+    id: String, 
+    new_cube: Json<Cube>, 
 ) -> Result<Json<Cube>, Status> {
     if id.is_empty() {
         return Err(Status::BadRequest);
@@ -138,13 +140,13 @@ pub fn get_all_cubes(db: &State<MongoRepo>) -> Result<Json<Vec<Cube>>, Status> {
 }
 
 #[get("/cube_by_name?<name>")]
-pub fn get_cube_by_name(db: &State<MongoRepo>, name: String) -> Result<Json<Vec<Cube>>, Status> {
+pub fn get_cube_by_name(db: &State<MongoRepo>, name: String) -> Result<Json<Cube>, Status> {
     if name.is_empty() {
         return Err(Status::BadRequest);
     };
-    let cubes_detail = db.get_cube_by_name(&name);
-    match cubes_detail {
-        Ok(cubes) => Ok(Json(cubes)),
+    let cube_detail = db.get_cube_by_name(&name);
+    match cube_detail {
+        Ok(cube) => Ok(Json(cube)),
         Err(_) => Err(Status::InternalServerError)
     }
 }
