@@ -88,6 +88,39 @@ impl MongoRepo {
         Ok(updated_doc)
     }
     
+    pub fn edit_cube_by_name(
+        &self, 
+        name: &String, 
+        new_cube: Cube
+    ) -> Result<UpdateResult, Error> {
+        let filter = doc!{ "name": name };
+        let bson_type = bson::to_bson(&new_cube.type_).unwrap();
+        let bson_wr = bson::to_bson(&new_cube.wr).unwrap();
+        let bson_pieces = bson::to_bson(&new_cube.pieces).unwrap();
+        let bson_faces  = bson::to_bson(&new_cube.faces).unwrap();
+        let bson_stickers  = bson::to_bson(&new_cube.stickers).unwrap();
+        let bson_year  = bson::to_bson(&new_cube.year_created).unwrap();
+        let new_doc = doc! {
+            "$set":
+                {
+                    "id": new_cube.id,
+                    "name": new_cube.name,
+                    "type_": bson_type,
+                    "pieces": bson_pieces,
+                    "faces": bson_faces,
+                    "stickers": bson_stickers,
+                    "year_created": bson_year,
+                    "wr": bson_wr,
+                },
+        };
+        let updated_doc = self
+            .col
+            .update_one(filter, new_doc, None)
+            .expect("Error updating the cube");
+
+        Ok(updated_doc)
+    }
+    
     pub fn delete_cube(&self, id: &String) -> Result<DeleteResult, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
