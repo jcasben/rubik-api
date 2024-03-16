@@ -50,17 +50,17 @@ impl MongoRepo {
     pub fn get_cube(&self, id: &String) -> Result<Cube, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
-        let user_detail = self
+        let cube_detail = self
             .col
             .find_one(filter, None)
             .expect("Error getting cube's detail");
         
-        Ok(user_detail.unwrap())
+        Ok(cube_detail.unwrap())
     }
     
     pub fn edit_cube(&self, id: &String, new_cube: Cube) -> Result<UpdateResult, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
-        let filer = doc! {"_id": obj_id};
+        let filter = doc! {"_id": obj_id};
         let bson_type = bson::to_bson(&new_cube.type_).unwrap();
         let bson_wr = bson::to_bson(&new_cube.wr).unwrap();
         let bson_pieces = bson::to_bson(&new_cube.pieces).unwrap();
@@ -82,7 +82,7 @@ impl MongoRepo {
         };
         let updated_doc = self
             .col
-            .update_one(filer, new_doc, None)
+            .update_one(filter, new_doc, None)
             .expect("Error updating the cube");
 
         Ok(updated_doc)
@@ -142,15 +142,14 @@ impl MongoRepo {
         Ok(cubes)
     }
 
-    pub fn get_cube_by_name(&self, name: &String) -> Result<Vec<Cube>, Error> {
+    pub fn get_cube_by_name(&self, name: &String) -> Result<Cube, Error> {
         let filter = doc! {"name": name};
-        let cursors = self
+        let cube_detail = self
             .col
-            .find(filter, None)
+            .find_one(filter, None)
             .expect("Error getting cube by name!");
-        let cubes = cursors.map(|doc| doc.unwrap()).collect();
 
-        Ok(cubes)
+        Ok(cube_detail.unwrap())
     }
 
     pub fn get_cube_by_type(&self, type_: &String) -> Result<Vec<Cube>, Error> {
