@@ -72,6 +72,44 @@ pub fn update_cube(
     }
 }
 
+#[put("/update_by_name?<name>", data = "<new_cube>")]
+pub fn update_cube_by_name(
+    db: &State<MongoRepo>,
+    name: String,
+    new_cube: Json<Cube>,
+) -> Result<Json<Cube>, Status> {
+    if name.is_empty() {
+        return Err(Status::BadRequest);
+    };
+
+    let data = Cube {
+        id: new_cube.id,
+        name: new_cube.name.to_owned(),
+        type_: new_cube.type_.clone(),
+        pieces: new_cube.pieces,
+        faces: new_cube.faces,
+        stickers: new_cube.stickers,
+        year_created: new_cube.year_created,
+        wr: new_cube.wr.clone(),
+    };
+
+    let update_result = db.edit_cube_by_name(&name, data);
+    match update_result {
+        Ok(update) => {
+            if update.matched_count == 1 {
+                let updated_cube_info = db.get_cube_by_name(&name);
+                match updated_cube_info {
+                    Ok(cube) => Ok(Json(cube)),
+                    Err(_) => Err(Status::InternalServerError),
+                }
+            } else {
+                Err(Status::NotFound)
+            }
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
 #[delete("/delete_cube?<id>")]
 pub fn delete_cube(db: &State<MongoRepo>, id: String) -> Result<Json<&str>, Status> {
     if id.is_empty() {
