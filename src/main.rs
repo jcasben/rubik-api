@@ -1,6 +1,7 @@
 mod api;
 mod models;
 mod repository;
+mod cors;
 
 #[macro_use] 
 extern crate rocket;
@@ -30,4 +31,5 @@ fn rocket() -> _ {
         .mount("/", routes![get_cube_by_name])
         .mount("/", routes![get_cube_by_type])
         .mount("/", routes![update_cube_by_name])
+        .attach(cors::CorsFairing)
 }
