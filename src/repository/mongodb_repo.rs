@@ -17,6 +17,10 @@ pub struct MongoRepo {
 }
 
 impl MongoRepo {
+    /// Inits a mongoDB instance with all the info of the database
+    /// 
+    /// ## Returns
+    /// * An instance of a mongoDB repository.
     pub fn init() -> Self {
         dotenv().ok();
         let uri = env::var("MONGOURI")
@@ -27,6 +31,14 @@ impl MongoRepo {
         MongoRepo { col }
     }
 
+    /// Inserts a cube into the database.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repo.
+    /// * `new_cube` - cube object to be inserted.
+    /// 
+    /// ## Returns
+    /// * The result of the operation.
     pub fn insert_cube(&self, new_cube: Cube) -> Result<InsertOneResult, Error> {
         let cube = Cube {
             id: None,
@@ -47,6 +59,14 @@ impl MongoRepo {
         Ok(cube)
     }
 
+    /// Gets a cube from the database by its ID.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `id` - ID of the cube.
+    /// 
+    /// ## Returns
+    /// * The cube object that was retrieved from the database.
     pub fn get_cube(&self, id: &String) -> Result<Cube, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
@@ -58,6 +78,14 @@ impl MongoRepo {
         Ok(cube_detail.unwrap())
     }
     
+    /// Edits a cube from the database given its ID.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `new_cube` - new cube object definition.
+    /// 
+    /// ## Returns
+    /// * The result of the operation.
     pub fn edit_cube(&self, id: &String, new_cube: Cube) -> Result<UpdateResult, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
@@ -88,6 +116,14 @@ impl MongoRepo {
         Ok(updated_doc)
     }
     
+    /// Edits a cube from the database given its name.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `new_cube` - new cube object definition.
+    /// 
+    /// ## Returns
+    /// * The result of the operation.
     pub fn edit_cube_by_name(
         &self, 
         name: &String, 
@@ -121,6 +157,14 @@ impl MongoRepo {
         Ok(updated_doc)
     }
     
+    /// Deletes a cube from the database given its ID.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `id` - ID of the cube to be deleted.
+    /// 
+    /// ## Returns
+    /// * The result of the operation.
     pub fn delete_cube(&self, id: &String) -> Result<DeleteResult, Error> {
         let obj_id = ObjectId::parse_str(id).unwrap();
         let filter = doc! {"_id": obj_id};
@@ -132,6 +176,13 @@ impl MongoRepo {
         Ok(cube_detail)
     }
     
+    /// Gets all the cubes available from the database.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// 
+    /// ## Returns
+    /// * A vector that contains all the cubes.
     pub fn get_all_cubes(&self) -> Result<Vec<Cube>, Error> {
         let cursors = self
             .col
@@ -142,6 +193,14 @@ impl MongoRepo {
         Ok(cubes)
     }
 
+    /// Gets a cube from the database by its name
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `name` - name of the cube to be retrieved from the database.
+    /// 
+    /// ## Returns
+    /// * The cube object.
     pub fn get_cube_by_name(&self, name: &String) -> Result<Cube, Error> {
         let filter = doc! {"name": name};
         let cube_detail = self
@@ -152,6 +211,14 @@ impl MongoRepo {
         Ok(cube_detail.unwrap())
     }
 
+    /// Gets all the cubes that match the specified type.
+    /// 
+    /// ## Arguments
+    /// * `self` - instance of the mongoDB repository.
+    /// * `type_` - type that the cubes must match.
+    /// 
+    /// ## Returns
+    /// A vector with all the cubes that matched the type.
     pub fn get_cube_by_type(&self, type_: &String) -> Result<Vec<Cube>, Error> {
         let filter = doc! {"type_": type_};
         let cursors = self
