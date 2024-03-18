@@ -13,7 +13,11 @@ impl Fairing for CorsFairing {
         }
     }
 
-    fn on_response<'r, 'life0, 'life1, 'life2, 'async_trait>(&'life0 self, request: &'r Request<'life1>, response: &'life2 mut Response<'r>) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    fn on_response<'r, 'life0, 'life1, 'life2, 'async_trait>(
+        &'life0 self, 
+        request: &'r Request<'life1>, 
+        response: &'life2 mut Response<'r>
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
     where
         Self: 'async_trait,
         'r: 'async_trait,
