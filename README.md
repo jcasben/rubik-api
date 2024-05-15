@@ -12,8 +12,6 @@ The information that can be pulled from this API includes:
 - the year the cube was invented 
 - the world record for this cube.
 
-*Try it out here!* https://rubik-api-jcasben.koyeb.app/cubes
-
 ## 📦 Technologies 
 
 - Rust
@@ -21,7 +19,6 @@ The information that can be pulled from this API includes:
 - MongoDB
 - Docker
 - Postman
-- Hosted at [Koyeb](https://www.koyeb.com/)
 
 ## ⚙️ Functionalities 
 
